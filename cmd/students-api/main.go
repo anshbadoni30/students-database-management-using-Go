@@ -11,11 +11,9 @@ import (
 	"time"
 
 	"github.com/anshbadoni30/students-api/internal/config"
+	"github.com/anshbadoni30/students-api/internal/http/handler/student"
 )
 
-func homepagehandler(w http.ResponseWriter, r *http.Request){
-	w.Write([]byte("Welcome to home page"))
-}
 
 func main() {
 	//setup config
@@ -25,7 +23,7 @@ func main() {
 
 	//setup routes
 	router:= http.NewServeMux()
-	router.HandleFunc("/",homepagehandler)
+	router.HandleFunc("/", student.New())
 
 	//setup server
 	server:=http.Server{
