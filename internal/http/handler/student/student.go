@@ -30,7 +30,7 @@ func New() http.HandlerFunc{
 		//validating request
 		errr:=validator.New().Struct(student)
 		if errr!=nil{
-			validatorErrs:= err.(validator.ValidationErrors)
+			validatorErrs:= errr.(validator.ValidationErrors)
 			response.WriteJson(w,http.StatusBadRequest,response.ValidateError(validatorErrs))
 			return
 		}

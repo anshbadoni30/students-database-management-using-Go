@@ -19,7 +19,7 @@ const (
 	StatusError = "Error"
 )
 func WriteJson(w http.ResponseWriter, status int, data interface{}) error{
-	w.Header().Set("Content-Type","appliction/json")
+	w.Header().Set("Content-Type","application/json")
 	w.WriteHeader(status)
 
 	return json.NewEncoder(w).Encode(data)
@@ -40,13 +40,13 @@ func ValidateError(errs validator.ValidationErrors) Response{
 			errMsgs = append(errMsgs, fmt.Sprintf("field %s is required field",err.Field()))
 		
 		default:
-			errMsgs =append(errMsgs, fmt.Sprintf("filed %s is invalid",err.Field()))
+			errMsgs =append(errMsgs, fmt.Sprintf("field %s is invalid",err.Field()))
 		}
 
 	}
 
 	return Response{
 		Status: StatusError,
-		Error: strings.Join(errMsgs,","),
+		Error: strings.Join(errMsgs,", "),
 	}
 }
