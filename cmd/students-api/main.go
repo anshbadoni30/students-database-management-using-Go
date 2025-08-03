@@ -12,6 +12,7 @@ import (
 
 	"github.com/anshbadoni30/students-api/internal/config"
 	"github.com/anshbadoni30/students-api/internal/http/handler/student"
+	"github.com/anshbadoni30/students-api/internal/storage/sqlite"
 )
 
 
@@ -20,17 +21,23 @@ func main() {
 	cfg:= config.MustLoad()
 
 	//setup database
+	storage, er:= sqlite.New(cfg)
+	if er!=nil{
+		log.Fatal(er)
+	}
+
+	slog.Info("storage initialized", slog.String("env",cfg.Env), slog.String("version","1.0.0"))
 
 	//setup routes
 	router:= http.NewServeMux()
-	router.HandleFunc("GET /api/v1", student.New())
+	router.HandleFunc("GET /api/v1", student.New(storage))
 
 	//setup server
 	server:=http.Server{
 		Addr: cfg.HttpServer.Address,
 		Handler: router,
 	}
-	slog.Info("server started", slog.String("on Address: ", cfg.HttpServer.Address))
+	slog.Info("server started", slog.String("on Address:", cfg.HttpServer.Address))
 	
 	done:= make(chan os.Signal,1)
 	signal.Notify(done, os.Interrupt,syscall.SIGINT,syscall.SIGTERM)
