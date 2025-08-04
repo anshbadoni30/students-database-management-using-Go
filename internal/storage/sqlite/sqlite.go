@@ -97,3 +97,45 @@ func (s *Sqlite)GetStudents()([]types.Student,error){
 	}
 	return students,nil
 }
+
+func (s *Sqlite)NameChange(username string, id int64) (int64,error){
+	stmt,err:=s.Db.Prepare("Update students Set name= ? where id=?")
+	if err!=nil{
+		return 0,err
+	}
+	defer stmt.Close()
+	result,er:=stmt.Exec(username,id)
+	if er!=nil{
+		return 0,er
+	}
+	rows,er:=result.RowsAffected()
+	if rows==0{
+		return 0,fmt.Errorf("no student found with id %s",fmt.Sprint(id))
+	}
+	if er!=nil{
+		return 0,er
+	}
+	
+	return rows,nil
+}
+
+func (s *Sqlite)DeleteRecord(id int64)(int64,error){
+	stmt,err:=s.Db.Prepare("Delete from students where id = ?")
+	if err!=nil{
+		return 0,err
+	}
+	defer stmt.Close()
+	result,er:=stmt.Exec(id)
+	if er!=nil{
+		return 0,er
+	}
+	rows,er:=result.RowsAffected()
+	if rows==0{
+		return 0,fmt.Errorf("no student found with id %s",fmt.Sprint(id))
+	}
+	if er!=nil{
+		return 0,er
+	}
+	
+	return rows,nil
+}

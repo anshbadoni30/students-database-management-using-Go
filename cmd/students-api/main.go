@@ -21,7 +21,7 @@ func main() {
 	cfg:= config.MustLoad()
 
 	//setup database
-	storage, er:= sqlite.CreateTable(cfg)
+	storage, er:= sqlite.CreateTable(cfg)  //Creating a new Table
 	if er!=nil{
 		log.Fatal(er)
 	}
@@ -30,9 +30,11 @@ func main() {
 
 	//setup routes
 	router:= http.NewServeMux()
-	router.HandleFunc("GET /api/students/v1", student.New(storage))
-	router.HandleFunc("GET /api/students/{id}", student.Getbyid(storage))
-	router.HandleFunc("GET /api/students", student.GetList(storage))
+	router.HandleFunc("GET /api/students/v1", student.New(storage)) //Creating the data in table 
+	router.HandleFunc("GET /api/students/{id}", student.Getbyid(storage)) //Accessing record using id
+	router.HandleFunc("GET /api/students", student.GetList(storage)) //Accessing whole data
+	router.HandleFunc("PATCH /api/students/{username}/{id}", student.ReplaceName(storage)) //changing the username
+	router.HandleFunc("DELETE /api/students/delete/{id}", student.Delete(storage))
 	//setup server
 	server:=http.Server{
 		Addr: cfg.HttpServer.Address,

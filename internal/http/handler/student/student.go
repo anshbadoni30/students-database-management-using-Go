@@ -86,3 +86,44 @@ func GetList( storage storage.Storage) http.HandlerFunc{
 		response.WriteJson(w,http.StatusOK,students)
 	}
 }
+
+func ReplaceName( storage storage.Storage) http.HandlerFunc{
+	return func(w http.ResponseWriter, r *http.Request){
+
+		username:=r.PathValue("username")
+		id:=r.PathValue("id")
+
+		//converting string id in int id
+		intid,er:=strconv.ParseInt(id,10,64)
+		if er!=nil{
+		response.WriteJson(w,http.StatusBadRequest,response.GeneralError(er))
+		return
+		}
+		rows,err:=storage.NameChange(username,intid)
+		if err!=nil{
+			response.WriteJson(w,http.StatusInternalServerError,response.GeneralError(err))
+			return 
+		}
+		response.WriteJson(w,http.StatusOK,map[string]int64 {"rows Affected":rows})
+
+	}
+}
+
+func Delete(storage storage.Storage) http.HandlerFunc{
+	return func(w http.ResponseWriter,r *http.Request){
+		id:=r.PathValue("id")
+
+		//converting string id in int id
+		intid,er:=strconv.ParseInt(id,10,64)
+		if er!=nil{
+		response.WriteJson(w,http.StatusBadRequest,response.GeneralError(er))
+		return
+		}
+		rows,err:= storage.DeleteRecord(intid)
+		if err!=nil{
+			response.WriteJson(w,http.StatusInternalServerError,response.GeneralError(err))
+			return
+		}
+		response.WriteJson(w,http.StatusOK,map[string]int64 {"rows Affected":rows})
+	}
+}
