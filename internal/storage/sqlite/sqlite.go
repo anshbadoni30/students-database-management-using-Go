@@ -13,7 +13,7 @@ type Sqlite struct {
 	Db *sql.DB
 }
 
-func New(cfg *config.Config) (*Sqlite,error){
+func CreateTable(cfg *config.Config) (*Sqlite,error){
 	db,err:= sql.Open("sqlite3", cfg.StoragePath)
 	if err!=nil{
 		return nil,err
@@ -71,4 +71,29 @@ func (s *Sqlite)GetStudentById(id int64) (types.Student,error){
 		return types.Student{},fmt.Errorf("query error: %w",err)
 	}
 	return student,nil
+}
+
+func (s *Sqlite)GetStudents()([]types.Student,error){
+	stmt,err:= s.Db.Prepare("Select * from students")
+	if err!=nil{
+		return nil,err
+	}
+	defer stmt.Close()
+
+	rows,er:=stmt.Query()
+	if er!=nil{
+		return nil,er
+	}
+	defer rows.Close()
+	var students []types.Student
+
+	for rows.Next(){
+		var student types.Student
+		er:=rows.Scan(&student.Id,&student.Name,&student.Email,&student.Age)
+		if er!=nil{
+			return nil,er
+		}
+		students=append(students, student)
+	}
+	return students,nil
 }
